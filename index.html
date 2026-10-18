@@ -255,7 +255,9 @@
   // To add a university: copy one line and change the name, weights (must total 100), test name and test total.
   var PRESETS = [
     {name:"Custom (type your own weights)", m:10, i:40, t:50, test:"Entry Test", total:100, note:"Type the weights from your university's admission notice."},
-    {name:"NFC IET Multan (ECAT / NAT / USAT)", m:15, i:50, t:35, test:"Entry Test", total:400, note:"Formula as used by NFC IET. Your best entry test score (ECAT, NAT or USAT) is counted, so set the test's total marks to match the test you took."},
+    {name:"NFC IET Multan – ECAT", m:15, i:50, t:35, test:"ECAT", total:400, note:"Formula as used by NFC IET. If you took more than one test (ECAT, NAT, USAT), your best percentage is counted."},
+    {name:"NFC IET Multan – NAT", m:15, i:50, t:35, test:"NAT", total:100, note:"Formula as used by NFC IET. NAT is out of 100. If you took more than one test, your best percentage is counted."},
+    {name:"NFC IET Multan – USAT", m:15, i:50, t:35, test:"USAT", total:100, note:"Formula as used by NFC IET. USAT is out of 100. If you took more than one test, your best percentage is counted."},
     {name:"UET Lahore (ECAT)", m:17, i:50, t:33, test:"ECAT", total:400, note:"Widely reported formula for 2025–26. UET has changed it before, so confirm on admission.uet.edu.pk."},
     {name:"NUST (NET)", m:10, i:15, t:75, test:"NET", total:200, note:"Reported NUST formula for 2025–26. Confirm on ugadmissions.nust.edu.pk."},
     {name:"FAST NUCES – Engineering", m:17, i:50, t:33, test:"FAST Test", total:100, note:"From FAST's official eligibility page (nu.edu.pk)."},
