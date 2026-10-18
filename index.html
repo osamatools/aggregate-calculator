@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aggregate Calculator Pakistan – University Merit & Honhaar Scholarship</title>
+<meta name="description" content="Free aggregate calculator for Pakistani students. Calculate your university merit from Matric, Inter (FSc/ICS) and entry test (ECAT, NTS, etc.) marks, or your Punjab Honhaar Scholarship aggregate (30% Matric + 70% Inter).">
+<!-- GOOGLE SEARCH CONSOLE TAG GOES ON THE NEXT LINE -->
+
+<style>
+  :root{
+    --bg:#f4f7f5; --card:#ffffff; --ink:#14231b; --muted:#5b6b62;
+    --line:#dfe7e2; --accent:#0b7a4b; --accent-soft:#e3f3ea; --warn:#b4471f; --warn-soft:#fbeae3;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1512; --card:#18211c; --ink:#e8efea; --muted:#9db0a5;
+      --line:#2a3630; --accent:#37c483; --accent-soft:#18352a; --warn:#ff9a72; --warn-soft:#3a2219;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto;padding:16px}
+  header{padding:8px 0 4px}
+  h1{font-size:1.6rem;margin:0 0 4px;line-height:1.25}
+  .sub{color:var(--muted);margin:0}
+  .clock{margin:14px 0;padding:12px 14px;border-radius:12px;background:var(--card);
+    border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .clock .date{font-weight:600}
+  .clock .time{font-variant-numeric:tabular-nums;font-size:1.25rem;font-weight:700;color:var(--accent)}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:5px;margin-bottom:14px}
+  .tab{border:0;background:transparent;color:var(--muted);padding:11px 8px;border-radius:9px;
+    font:inherit;font-weight:600;cursor:pointer}
+  .tab.active{background:var(--accent);color:#fff}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:1.1rem;margin:0 0 4px}
+  .hint{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+  .row{display:grid;grid-template-columns:1.2fr 1fr 1fr .8fr;gap:8px;align-items:end;
+    padding:10px 0;border-top:1px solid var(--line)}
+  .row:first-of-type{border-top:0}
+  .row .name{font-weight:600;align-self:center}
+  label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:3px}
+  input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);
+    color:var(--ink);font:inherit;font-variant-numeric:tabular-nums}
+  input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+  .testname{font-weight:600}
+  .result{text-align:center;padding:20px 16px;border-radius:14px;background:var(--accent-soft);
+    border:1px solid var(--line);margin-bottom:14px}
+  .result .label{color:var(--muted);font-size:.9rem}
+  .result .big{font-size:2.6rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.1}
+  .breakdown{margin-top:10px;font-size:.92rem;color:var(--muted)}
+  .breakdown div{display:flex;justify-content:space-between;max-width:320px;margin:2px auto}
+  .msg{display:none;margin-top:10px;padding:10px;border-radius:8px;background:var(--warn-soft);color:var(--warn);font-size:.9rem}
+  .msg.show{display:block}
+  .note{font-size:.88rem;color:var(--muted)}
+  .content h2{font-size:1.15rem;margin:18px 0 6px}
+  .content p,.content li{color:var(--ink)}
+  footer{color:var(--muted);font-size:.85rem;text-align:center;padding:16px 0 30px}
+  .hidden{display:none}
+  @media (max-width:560px){
+    .row{grid-template-columns:1fr 1fr 1fr}
+    .row .name{grid-column:1 / -1}
+    h1{font-size:1.35rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Aggregate Calculator Pakistan</h1>
+    <p class="sub">University merit &amp; Punjab Honhaar Scholarship aggregate — free and instant.</p>
+  </header>
+
+  <div class="clock" aria-live="off">
+    <span class="date" id="date">—</span>
+    <span class="time" id="time">—</span>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" id="tabUni" role="tab" aria-selected="true">University Aggregate</button>
+    <button class="tab" id="tabHon" role="tab" aria-selected="false">Honhaar Scholarship</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result">
+    <div class="label" id="resultLabel">Your University Aggregate</div>
+    <div class="big" id="result">0.00%</div>
+    <div class="breakdown" id="breakdown"></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <!-- MARKS -->
+  <div class="card">
+    <h2>Your Marks</h2>
+    <p class="hint">Enter obtained and total marks. Results update as you type.</p>
+
+    <div class="row">
+      <div class="name">Matric (SSC)</div>
+      <div><label for="mObt">Obtained</label><input id="mObt" type="number" inputmode="decimal" min="0" placeholder="e.g. 980"></div>
+      <div><label for="mTot">Total</label><input id="mTot" type="number" inputmode="decimal" min="1" value="1100"></div>
+      <div class="uniOnly"><label for="wM">Weight %</label><input id="wM" type="number" inputmode="decimal" min="0" max="100" value="10"></div>
+    </div>
+
+    <div class="row">
+      <div class="name">Inter (HSSC / FSc)</div>
+      <div><label for="iObt">Obtained</label><input id="iObt" type="number" inputmode="decimal" min="0" placeholder="e.g. 950"></div>
+      <div><label for="iTot">Total</label><input id="iTot" type="number" inputmode="decimal" min="1" value="1100"></div>
+      <div class="uniOnly"><label for="wI">Weight %</label><input id="wI" type="number" inputmode="decimal" min="0" max="100" value="40"></div>
+    </div>
+
+    <div class="row uniOnly">
+      <div class="name">
+        <label for="tName">Entry test name</label>
+        <input id="tName" class="testname" type="text" value="ECAT" maxlength="20">
+      </div>
+      <div><label for="tObt">Obtained</label><input id="tObt" type="number" inputmode="decimal" min="0" placeholder="e.g. 250"></div>
+      <div><label for="tTot">Total</label><input id="tTot" type="number" inputmode="decimal" min="1" value="400"></div>
+      <div><label for="wT">Weight %</label><input id="wT" type="number" inputmode="decimal" min="0" max="100" value="50"></div>
+    </div>
+
+    <p class="note uniOnly">Every university uses its own weights. Copy them from your university's official admission
+      notice or prospectus and type them in the "Weight %" boxes. The three weights must add up to 100.</p>
+    <p class="note honOnly hidden">Honhaar formula used here: <strong>30% Matric + 70% Inter</strong>.
+      Always confirm the latest criteria on the official Honhaar Scholarship website.</p>
+  </div>
+
+  <!-- SEO CONTENT -->
+  <div class="card content">
+    <h2>How is the university aggregate calculated?</h2>
+    <p>Each part is converted to a percentage and then multiplied by the weight your university gives it:</p>
+    <p><strong>Aggregate = (Matric % × Matric weight) + (Inter % × Inter weight) + (Test % × Test weight)</strong></p>
+    <p>Example: with 980/1100 in Matric (weight 10%), 950/1100 in Inter (weight 40%) and 250/400 in ECAT (weight 50%),
+      the aggregate is 8.91 + 34.55 + 31.25 ≈ <strong>74.70%</strong>.</p>
+
+    <h2>How is the Honhaar Scholarship aggregate calculated?</h2>
+    <p><strong>Aggregate = (Matric % × 30%) + (Inter % × 70%)</strong>. For example, 980/1100 in Matric and 950/1100 in Inter
+      gives 26.73 + 60.45 = <strong>87.18%</strong>.</p>
+
+    <h2>Which tests can I use?</h2>
+    <p>Any entry test — ECAT, NTS, NAT, ETEA, university tests and more. Just type the test name, its total marks and the
+      weight your university uses.</p>
+
+    <h2>Is this calculator official?</h2>
+    <p>No. It is a free helper tool. Final merit is decided by the university or scholarship authority, so always check their
+      official notice.</p>
+  </div>
+
+  <footer>Free tool for Pakistani students · Made with care</footer>
+</div>
+
+<script>
+(function(){
+  var mode = "uni";
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ---- Live clock (Pakistan time) ----
+  function tick(){
+    var now = new Date();
+    var tz = "Asia/Karachi";
+    $("date").textContent = now.toLocaleDateString("en-GB",
+      {weekday:"long", day:"numeric", month:"long", year:"numeric", timeZone:tz});
+    $("time").textContent = now.toLocaleTimeString("en-US",
+      {hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:true, timeZone:tz}) + " PKT";
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ---- Helpers ----
+  function num(id){ var v = parseFloat($(id).value); return isNaN(v) ? null : v; }
+  function pct(obt, tot){ return (obt === null || !tot) ? null : obt / tot * 100; }
+  function fmt(x){ return x.toFixed(2); }
+
+  // ---- Calculation ----
+  function calc(){
+    var errors = [];
+    var mObt = num("mObt"), mTot = num("mTot"), iObt = num("iObt"), iTot = num("iTot");
+    var tObt = num("tObt"), tTot = num("tTot");
+    var testName = ($("tName").value || "Test").trim() || "Test";
+
+    if (mObt !== null && mTot && mObt > mTot) errors.push("Matric obtained marks are more than total marks.");
+    if (iObt !== null && iTot && iObt > iTot) errors.push("Inter obtained marks are more than total marks.");
+
+    var parts;
+    if (mode === "honhaar"){
+      parts = [
+        {name:"Matric", p:pct(mObt,mTot), w:30},
+        {name:"Inter",  p:pct(iObt,iTot), w:70}
+      ];
+    } else {
+      if (tObt !== null && tTot && tObt > tTot) errors.push(testName + " obtained marks are more than total marks.");
+      var wM = num("wM") || 0, wI = num("wI") || 0, wT = num("wT") || 0;
+      var sum = wM + wI + wT;
+      if (Math.abs(sum - 100) > 0.001) errors.push("Weights add up to " + fmt(sum) + "%. They must add up to 100%.");
+      parts = [
+        {name:"Matric",  p:pct(mObt,mTot), w:wM},
+        {name:"Inter",   p:pct(iObt,iTot), w:wI},
+        {name:testName,  p:pct(tObt,tTot), w:wT}
+      ];
+    }
+
+    var total = 0, html = "";
+    parts.forEach(function(x){
+      var share = x.p === null ? 0 : x.p * x.w / 100;
+      total += share;
+      html += "<div><span>" + escapeHtml(x.name) + " (" + fmt(x.w) + "%)</span><span>" +
+              (x.p === null ? "—" : fmt(share)) + "</span></div>";
+    });
+
+    $("result").textContent = fmt(total) + "%";
+    $("breakdown").innerHTML = html;
+    var msg = $("msg");
+    if (errors.length){ msg.innerHTML = errors.map(escapeHtml).join("<br>"); msg.classList.add("show"); }
+    else { msg.classList.remove("show"); }
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  // ---- Mode switch ----
+  function setMode(m){
+    mode = m;
+    var uni = m === "uni";
+    $("tabUni").classList.toggle("active", uni);
+    $("tabHon").classList.toggle("active", !uni);
+    $("tabUni").setAttribute("aria-selected", uni);
+    $("tabHon").setAttribute("aria-selected", !uni);
+    document.querySelectorAll(".uniOnly").forEach(function(el){ el.classList.toggle("hidden", !uni); });
+    document.querySelectorAll(".honOnly").forEach(function(el){ el.classList.toggle("hidden", uni); });
+    $("resultLabel").textContent = uni ? "Your University Aggregate" : "Your Honhaar Scholarship Aggregate";
+    calc();
+  }
+
+  $("tabUni").addEventListener("click", function(){ setMode("uni"); });
+  $("tabHon").addEventListener("click", function(){ setMode("honhaar"); });
+  document.querySelectorAll("input").forEach(function(el){ el.addEventListener("input", calc); });
+  calc();
+})();
+</script>
+</body>
+</html>
