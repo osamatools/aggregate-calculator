@@ -58,7 +58,18 @@
   .content h2{font-size:1.15rem;margin:18px 0 6px}
   .content p,.content li{color:var(--ink)}
   footer{color:var(--muted);font-size:.85rem;text-align:center;padding:16px 0 30px}
-  .hidden{display:none}
+  .hidden{display:none !important}
+  .quote{margin:0 0 14px;padding:14px 16px;border-radius:12px;background:var(--card);border:1px solid var(--line);
+    border-left:4px solid var(--accent)}
+  .quote .qlabel{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+  .quote .qtext{font-size:1.02rem;font-style:italic;margin:0}
+  .quote .qby{margin:6px 0 0;font-weight:600;color:var(--accent);font-size:.92rem}
+  .preset{display:grid;gap:6px;margin-bottom:6px}
+  select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+  .formula{margin:8px 0 4px;padding:10px 12px;border-radius:8px;background:var(--accent-soft);font-weight:700}
+  .formula small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+  .share{display:block;width:100%;margin-top:14px;padding:11px;border:0;border-radius:10px;background:#25d366;color:#06301a;
+    font:inherit;font-weight:700;cursor:pointer}
   @media (max-width:560px){
     .row{grid-template-columns:1fr 1fr 1fr}
     .row .name{grid-column:1 / -1}
@@ -79,6 +90,12 @@
     <span class="time" id="time">—</span>
   </div>
 
+  <div class="quote">
+    <div class="qlabel">Quote of the day</div>
+    <p class="qtext" id="qText"></p>
+    <p class="qby" id="qBy"></p>
+  </div>
+
   <div class="tabs" role="tablist">
     <button class="tab active" id="tabUni" role="tab" aria-selected="true">University Aggregate</button>
     <button class="tab" id="tabHon" role="tab" aria-selected="false">Honhaar Scholarship</button>
@@ -90,12 +107,22 @@
     <div class="big" id="result">0.00%</div>
     <div class="breakdown" id="breakdown"></div>
     <div class="msg" id="msg"></div>
+    <button class="share" id="share" type="button">Share on WhatsApp</button>
   </div>
 
   <!-- MARKS -->
   <div class="card">
     <h2>Your Marks</h2>
     <p class="hint">Enter obtained and total marks. Results update as you type.</p>
+
+    <div class="preset uniOnly">
+      <label for="uni">Choose your university / test</label>
+      <select id="uni"></select>
+      <div class="formula" id="formula"></div>
+    </div>
+    <div class="preset honOnly hidden">
+      <div class="formula">Honhaar Scholarship: 30% Matric + 70% Inter</div>
+    </div>
 
     <div class="row">
       <div class="name">Matric (SSC)</div>
@@ -139,6 +166,10 @@
     <p><strong>Aggregate = (Matric % × 30%) + (Inter % × 70%)</strong>. For example, 980/1100 in Matric and 950/1100 in Inter
       gives 26.73 + 60.45 = <strong>87.18%</strong>.</p>
 
+    <h2>Which universities are included?</h2>
+    <p>Ready-made formulas for UET Lahore (ECAT), NUST (NET), FAST NUCES, COMSATS and MDCAT (MBBS/BDS). Pick one from the
+      list and the weights fill in automatically. For any other university, choose "Custom" and type its weights.</p>
+
     <h2>Which tests can I use?</h2>
     <p>Any entry test — ECAT, NTS, NAT, ETEA, university tests and more. Just type the test name, its total marks and the
       weight your university uses.</p>
@@ -166,6 +197,82 @@
       {hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:true, timeZone:tz}) + " PKT";
   }
   tick(); setInterval(tick, 1000);
+
+  // ---- Quote of the day (changes every day, Pakistan time) ----
+  // To add a quote: copy one line, change the text and the name, keep the commas.
+  var QUOTES = [
+    ["Unity, Faith, Discipline.", "Quaid-e-Azam Muhammad Ali Jinnah"],
+    ["Think a hundred times before you take a decision, but once that decision is taken, stand by it as one man.", "Quaid-e-Azam Muhammad Ali Jinnah"],
+    ["With faith, discipline and selfless devotion to duty, there is nothing worthwhile that you cannot achieve.", "Quaid-e-Azam Muhammad Ali Jinnah"],
+    ["Ki Muhammad (ﷺ) se wafa tu ne to hum tere hain, ye jahan cheez hai kya, lauh-o-qalam tere hain.", "Allama Muhammad Iqbal (Jawab-e-Shikwa)"],
+    ["Nations are born in the hearts of poets; they prosper and die in the hands of politicians.", "Allama Muhammad Iqbal (Stray Reflections)"],
+    ["Indeed, with hardship comes ease.", "The Holy Qur'an (94:6)"],
+    ["My Lord, increase me in knowledge.", "The Holy Qur'an (20:114)"],
+    ["Seeking knowledge is an obligation upon every Muslim.", "Prophet Muhammad ﷺ (Sunan Ibn Majah)"],
+    ["The worth of every man is in his attainments.", "Hazrat Ali (RA), Nahj al-Balagha"],
+    ["I warn you against shedding blood, indulging in it and making a habit of it, for blood never sleeps.", "Salahuddin Ayyubi, advice to his son (recorded by Ibn Shaddad)"],
+    ["I am indebted to my father for living, but to my teacher for living well.", "Alexander the Great, on Aristotle (as recorded by Plutarch)"],
+    ["This above all: to thine own self be true.", "William Shakespeare (Hamlet)"],
+    ["Our doubts are traitors, and make us lose the good we oft might win, by fearing to attempt.", "William Shakespeare (Measure for Measure)"],
+    ["We know what we are, but know not what we may be.", "William Shakespeare (Hamlet)"],
+    ["Some are born great, some achieve greatness, and some have greatness thrust upon them.", "William Shakespeare (Twelfth Night)"],
+    ["Hazaron khwahishen aisi ke har khwahish pe dam nikle, bahut nikle mere armaan lekin phir bhi kam nikle.", "Mirza Ghalib"],
+    ["For the things we have to learn before we can do them, we learn by doing them.", "Aristotle (Nicomachean Ethics)"],
+    ["If I have seen further, it is by standing on the shoulders of giants.", "Sir Isaac Newton"],
+    ["Well done is better than well said.", "Benjamin Franklin"],
+    ["One never notices what has been done; one can only see what remains to be done.", "Marie Curie"],
+    ["Genius is one percent inspiration and ninety-nine percent perspiration.", "Thomas Edison"],
+    ["Education is the most powerful weapon which you can use to change the world.", "Nelson Mandela"]
+  ];
+  (function showQuote(){
+    var parts = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Karachi", year:"numeric", month:"2-digit", day:"2-digit"})
+      .format(new Date()).split("-");
+    var dayNumber = Math.floor(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]) / 86400000);
+    var q = QUOTES[dayNumber % QUOTES.length];
+    $("qText").textContent = "“" + q[0] + "”";
+    $("qBy").textContent = "— " + q[1];
+  })();
+
+  // ---- University presets ----
+  // To add a university: copy one line and change the name, weights (must total 100), test name and test total.
+  var PRESETS = [
+    {name:"Custom (type your own weights)", m:10, i:40, t:50, test:"Entry Test", total:100, note:"Type the weights from your university's admission notice."},
+    {name:"UET Lahore (ECAT)", m:17, i:50, t:33, test:"ECAT", total:400, note:"Widely reported formula for 2025–26. UET has changed it before, so confirm on admission.uet.edu.pk."},
+    {name:"NUST (NET)", m:10, i:15, t:75, test:"NET", total:200, note:"Reported NUST formula for 2025–26. Confirm on ugadmissions.nust.edu.pk."},
+    {name:"FAST NUCES – Engineering", m:17, i:50, t:33, test:"FAST Test", total:100, note:"From FAST's official eligibility page (nu.edu.pk)."},
+    {name:"FAST NUCES – Computing / Business", m:10, i:40, t:50, test:"FAST Test", total:100, note:"From FAST's official eligibility page (nu.edu.pk)."},
+    {name:"COMSATS (NTS)", m:10, i:40, t:50, test:"NTS", total:100, note:"From COMSATS' official admissions FAQ."},
+    {name:"MBBS / BDS (MDCAT)", m:10, i:40, t:50, test:"MDCAT", total:180, note:"Reported PMDC formula for 2026 admissions. Confirm with PMDC / your provincial admission authority."}
+  ];
+  PRESETS.forEach(function(p, idx){
+    var o = document.createElement("option"); o.value = idx; o.textContent = p.name; $("uni").appendChild(o);
+  });
+  function showFormula(){
+    var p = PRESETS[+$("uni").value];
+    var name = +$("uni").value === 0 ? "Your formula" : p.name;
+    $("formula").innerHTML = escapeHtml(name) + ": " + escapeHtml($("wM").value || 0) + "% Matric + " +
+      escapeHtml($("wI").value || 0) + "% Inter + " + escapeHtml($("wT").value || 0) + "% " +
+      escapeHtml(($("tName").value || "Test").trim()) + "<small>" + escapeHtml(p.note) + "</small>";
+  }
+  function applyPreset(){
+    var p = PRESETS[+$("uni").value];
+    if (+$("uni").value !== 0){
+      $("wM").value = p.m; $("wI").value = p.i; $("wT").value = p.t; $("tName").value = p.test; $("tTot").value = p.total;
+    }
+    showFormula(); calc();
+  }
+  $("uni").addEventListener("change", applyPreset);
+  ["wM","wI","wT"].forEach(function(id){
+    $(id).addEventListener("input", function(){ $("uni").value = 0; showFormula(); });
+  });
+  $("tName").addEventListener("input", showFormula);
+
+  // ---- WhatsApp share ----
+  $("share").addEventListener("click", function(){
+    var label = $("resultLabel").textContent.replace("Your ", "My ");
+    var text = label + " is " + $("result").textContent + ". Calculate yours free: " + location.href.split("#")[0];
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+  });
 
   // ---- Helpers ----
   function num(id){ var v = parseFloat($(id).value); return isNaN(v) ? null : v; }
@@ -238,6 +345,7 @@
   $("tabUni").addEventListener("click", function(){ setMode("uni"); });
   $("tabHon").addEventListener("click", function(){ setMode("honhaar"); });
   document.querySelectorAll("input").forEach(function(el){ el.addEventListener("input", calc); });
+  showFormula();
   calc();
 })();
 </script>
