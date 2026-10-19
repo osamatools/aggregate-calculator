@@ -1,0 +1,320 @@
+cgpa.html<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPA & CGPA Calculator Pakistan – Semester GPA, CGPA and Target GPA</title>
+<meta name="description" content="Free GPA and CGPA calculator for Pakistani university students. Enter credit hours and grades to get your semester GPA, your new CGPA, and the GPA you need next semester to reach your target CGPA.">
+
+<style>
+  /* Multani kashi-kari palette: cobalt blue, firozi (turquoise) and white glaze */
+  :root{
+    --bg:#f6f4ee; --card:#ffffff; --ink:#14213d; --muted:#5a6478;
+    --line:#dde3ee; --accent:#1d4e9e; --firozi:#1597a8; --accent-soft:#e6f2f5;
+    --cobalt:#173f86; --cobalt-deep:#0f2c63; --tile-line:#7fd0db;
+    --warn:#b4471f; --warn-soft:#fbeae3;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0d1424; --card:#141e33; --ink:#e7ecf6; --muted:#9fabc4;
+      --line:#26324d; --accent:#6f9cf0; --firozi:#4cc3d2; --accent-soft:#16304a;
+      --cobalt:#173f86; --cobalt-deep:#0b1f47; --tile-line:#5fc2cf;
+      --warn:#ff9a72; --warn-soft:#3a2219;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto;padding:16px}
+  header{padding:8px 0 4px}
+  h1{font-size:1.6rem;margin:0 0 4px;line-height:1.25;color:var(--accent)}
+  .sub{color:var(--muted);margin:0}
+  .nav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+  .nav a{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);text-decoration:none;font-weight:600;font-size:.9rem}
+  .nav a.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .clock{margin:14px 0;padding:12px 14px;border-radius:12px;background:var(--card);
+    border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .clock .date{font-weight:600}
+  .clock .time{font-variant-numeric:tabular-nums;font-size:1.25rem;font-weight:700;color:var(--accent)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:1.1rem;margin:0 0 4px}
+  .hint{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+  label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:3px}
+  input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);
+    color:var(--ink);font:inherit;font-variant-numeric:tabular-nums}
+  input:focus,select:focus{outline:2px solid var(--firozi);outline-offset:1px;border-color:transparent}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  .course{display:grid;grid-template-columns:1.6fr .8fr 1fr .8fr auto;gap:8px;align-items:end;
+    padding:10px 0;border-top:1px solid var(--line)}
+  .course:first-child{border-top:0}
+  .del{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:8px;
+    width:40px;height:42px;font:inherit;font-size:1.1rem;cursor:pointer}
+  .del:hover{color:var(--warn);border-color:var(--warn)}
+  .add{margin-top:10px;padding:10px 14px;border:1px dashed var(--firozi);background:var(--accent-soft);color:var(--accent);
+    border-radius:10px;font:inherit;font-weight:700;cursor:pointer;width:100%}
+
+  /* Result card: cobalt glaze with a firozi kashi tile pattern */
+  .result{position:relative;text-align:center;padding:22px 18px;border-radius:16px;margin-bottom:14px;color:#fff;
+    background-color:var(--cobalt);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%237fd0db' stroke-opacity='.28' stroke-width='1.3'%3E%3Cpath d='M28 6c6 7 6 15 0 22c-6-7-6-15 0-22zM28 50c6-7 6-15 0-22c-6 7-6 15 0 22zM6 28c7-6 15-6 22 0c-7 6-15 6-22 0zM50 28c-7-6-15-6-22 0c7 6 15 6 22 0z'/%3E%3Ccircle cx='28' cy='28' r='3'/%3E%3Cpath d='M0 0l9 9M56 0l-9 9M0 56l9-9M56 56l-9-9'/%3E%3C/g%3E%3C/svg%3E"),
+      radial-gradient(circle at 50% 0%, #2a5bb0 0%, var(--cobalt) 55%, var(--cobalt-deep) 100%);
+    box-shadow:inset 0 0 0 5px var(--cobalt-deep), inset 0 0 0 7px var(--tile-line), 0 6px 18px rgba(15,44,99,.18)}
+  .scores{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:420px;margin:0 auto}
+  .score .label{color:#cfe3f7;font-size:.9rem}
+  .score .big{font-size:2.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+  .breakdown{margin:12px auto 0;max-width:340px;font-size:.92rem;color:#d9e8f7;
+    background:rgba(255,255,255,.08);border-radius:10px;padding:8px 12px}
+  .breakdown div{display:flex;justify-content:space-between;margin:2px 0}
+  .msg{display:none;margin:10px auto 0;max-width:420px;padding:10px;border-radius:8px;background:var(--warn-soft);color:var(--warn);font-size:.9rem}
+  .msg.show{display:block}
+  .share{display:block;width:100%;max-width:340px;margin:14px auto 0;padding:11px;border:0;border-radius:10px;background:#25d366;color:#06301a;
+    font:inherit;font-weight:700;cursor:pointer}
+
+  .needout{margin-top:10px;padding:12px;border-radius:8px;background:var(--accent-soft);font-weight:600;border-left:4px solid var(--firozi)}
+  .needout.bad{background:var(--warn-soft);color:var(--warn);border-left-color:var(--warn)}
+  .content h2{font-size:1.15rem;margin:18px 0 6px;color:var(--accent)}
+  .content a{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;font-size:.92rem;margin:6px 0}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-weight:600}
+  footer{color:var(--muted);font-size:.85rem;text-align:center;padding:16px 0 30px}
+  footer a{color:var(--accent)}
+  @media (max-width:560px){
+    h1{font-size:1.35rem}
+    .course{grid-template-columns:1fr 1fr 1fr auto}
+    .course .cname{grid-column:1 / -1}
+    .score .big{font-size:2.1rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>GPA &amp; CGPA Calculator Pakistan</h1>
+    <p class="sub">Semester GPA, new CGPA and target GPA — free and instant.</p>
+    <nav class="nav">
+      <a href="./">Aggregate Calculator</a>
+      <a class="on" href="cgpa.html">GPA &amp; CGPA Calculator</a>
+    </nav>
+  </header>
+
+  <div class="clock" aria-live="off">
+    <span class="date" id="date">—</span>
+    <span class="time" id="time">—</span>
+  </div>
+
+  <!-- PREVIOUS RECORD -->
+  <div class="card">
+    <h2>Your previous record</h2>
+    <p class="hint">Copy these from your last result card. Leave both empty if this is your first semester.</p>
+    <div class="two">
+      <div><label for="pCgpa">Current CGPA</label><input id="pCgpa" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="e.g. 3.21"></div>
+      <div><label for="pCh">Credit hours completed</label><input id="pCh" type="number" inputmode="decimal" min="0" placeholder="e.g. 36"></div>
+    </div>
+  </div>
+
+  <!-- THIS SEMESTER -->
+  <div class="card">
+    <h2>This semester's courses</h2>
+    <p class="hint">Enter each course's credit hours and grade. The grade fills in the points; you can change the points if your result card shows a different value.</p>
+    <div id="courses"></div>
+    <button class="add" id="addBtn" type="button">+ Add another course</button>
+  </div>
+
+  <!-- RESULT (directly under the courses) -->
+  <div class="result">
+    <div class="scores">
+      <div class="score"><div class="label">Semester GPA</div><div class="big" id="gpa">0.00</div></div>
+      <div class="score"><div class="label">New CGPA</div><div class="big" id="cgpa">0.00</div></div>
+    </div>
+    <div class="breakdown" id="breakdown"></div>
+    <div class="msg" id="msg"></div>
+    <button class="share" id="share" type="button">Share on WhatsApp</button>
+  </div>
+
+  <!-- TARGET -->
+  <div class="card">
+    <h2>What GPA do I need next semester?</h2>
+    <p class="hint">Uses your new CGPA above. Enter the CGPA you want and how many credit hours you will take next semester.</p>
+    <div class="two">
+      <div><label for="tCgpa">Target CGPA</label><input id="tCgpa" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="e.g. 3.00"></div>
+      <div><label for="tCh">Next semester credit hours</label><input id="tCh" type="number" inputmode="decimal" min="1" placeholder="e.g. 18"></div>
+    </div>
+    <div class="needout" id="needOut">Enter your target CGPA and next semester's credit hours.</div>
+  </div>
+
+  <!-- SEO CONTENT -->
+  <div class="card content">
+    <h2>How is semester GPA calculated?</h2>
+    <p>Multiply each course's grade points by its credit hours, add them up, then divide by the total credit hours:</p>
+    <p><strong>GPA = Σ (grade points × credit hours) ÷ Σ credit hours</strong></p>
+    <p>Example: a 3-credit course with A (4.00), a 3-credit course with B+ (3.33) and a 1-credit lab with A- (3.67) give
+      (12 + 9.99 + 3.67) ÷ 7 = <strong>3.67</strong>.</p>
+
+    <h2>How is CGPA calculated?</h2>
+    <p><strong>New CGPA = (old CGPA × old credit hours + this semester's quality points) ÷ total credit hours</strong>.
+      Example: a CGPA of 3.20 over 36 credit hours plus a 3.67 GPA over 18 credit hours gives
+      (115.2 + 66.06) ÷ 54 = <strong>3.36</strong>.</p>
+
+    <h2>Grade points used</h2>
+    <table>
+      <tr><th>Grade</th><th>Points</th><th>Grade</th><th>Points</th></tr>
+      <tr><td>A+ / A</td><td>4.00</td><td>C+</td><td>2.33</td></tr>
+      <tr><td>A-</td><td>3.67</td><td>C</td><td>2.00</td></tr>
+      <tr><td>B+</td><td>3.33</td><td>C-</td><td>1.67</td></tr>
+      <tr><td>B</td><td>3.00</td><td>D+</td><td>1.33</td></tr>
+      <tr><td>B-</td><td>2.67</td><td>D</td><td>1.00</td></tr>
+      <tr><td colspan="2"></td><td>F</td><td>0.00</td></tr>
+    </table>
+    <p>These are the common values on the 4.00 scale used by most Pakistani universities. Some universities print slightly
+      different points (for example 3.66 instead of 3.67), and the marks needed for each grade differ from university to university.
+      If your result card shows a different value, simply type it in the "Points" box.</p>
+
+    <h2>Is this calculator official?</h2>
+    <p>No. It is a free helper tool. Your official GPA and CGPA are the ones on your university's result card or transcript.</p>
+  </div>
+
+  <footer>Free tools for Pakistani students · <a href="./">Aggregate Calculator</a></footer>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ---- Live clock (Pakistan time) ----
+  function tick(){
+    var now = new Date(), tz = "Asia/Karachi";
+    $("date").textContent = now.toLocaleDateString("en-GB",
+      {weekday:"long", day:"numeric", month:"long", year:"numeric", timeZone:tz});
+    $("time").textContent = now.toLocaleTimeString("en-US",
+      {hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:true, timeZone:tz}) + " PKT";
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ---- Grade points (4.00 scale) ----
+  var GRADES = [["A+",4.00],["A",4.00],["A-",3.67],["B+",3.33],["B",3.00],["B-",2.67],
+                ["C+",2.33],["C",2.00],["C-",1.67],["D+",1.33],["D",1.00],["F",0.00]];
+
+  function num(v){ var n = parseFloat(v); return isNaN(n) ? null : n; }
+  function fmt(x){ return x.toFixed(2); }
+  function el(tag, attrs){ var e = document.createElement(tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+  // ---- Course rows ----
+  var count = 0;
+  function addCourse(){
+    count++;
+    var row = el("div", {"class":"course"});
+
+    var c1 = el("div", {"class":"cname"});
+    var l1 = el("label", {}); l1.textContent = "Course (optional)";
+    var name = el("input", {type:"text", placeholder:"Course " + count, maxlength:"40"});
+    c1.appendChild(l1); c1.appendChild(name);
+
+    var c2 = el("div", {});
+    var l2 = el("label", {}); l2.textContent = "Credit hrs";
+    var ch = el("input", {type:"number", inputmode:"decimal", min:"0", step:"0.5", value:"3"});
+    c2.appendChild(l2); c2.appendChild(ch);
+
+    var c3 = el("div", {});
+    var l3 = el("label", {}); l3.textContent = "Grade";
+    var gr = el("select", {});
+    var o0 = el("option", {value:""}); o0.textContent = "Select"; gr.appendChild(o0);
+    GRADES.forEach(function(g){ var o = el("option", {value:g[1]}); o.textContent = g[0]; gr.appendChild(o); });
+    c3.appendChild(l3); c3.appendChild(gr);
+
+    var c4 = el("div", {});
+    var l4 = el("label", {}); l4.textContent = "Points";
+    var pts = el("input", {type:"number", inputmode:"decimal", min:"0", max:"4", step:"0.01", placeholder:"0–4"});
+    c4.appendChild(l4); c4.appendChild(pts);
+
+    var del = el("button", {"class":"del", type:"button", "aria-label":"Remove course"});
+    del.textContent = "×";
+
+    gr.addEventListener("change", function(){ if (gr.value !== "") pts.value = parseFloat(gr.value).toFixed(2); calc(); });
+    pts.addEventListener("input", function(){ gr.value = ""; calc(); });
+    ch.addEventListener("input", calc);
+    name.addEventListener("input", calc);
+    del.addEventListener("click", function(){ row.remove(); calc(); });
+
+    row.appendChild(c1); row.appendChild(c2); row.appendChild(c3); row.appendChild(c4); row.appendChild(del);
+    $("courses").appendChild(row);
+  }
+  for (var i = 0; i < 5; i++) addCourse();
+  $("addBtn").addEventListener("click", function(){ addCourse(); calc(); });
+
+  // ---- Calculation ----
+  var state = {gpa:null, cgpa:null, totalCh:0};
+  function calc(){
+    var errors = [], semCh = 0, semQp = 0, used = 0;
+    document.querySelectorAll("#courses .course").forEach(function(row){
+      var inputs = row.querySelectorAll("input");
+      var ch = num(inputs[1].value), p = num(inputs[2].value);
+      if (p === null) return;
+      if (p < 0 || p > 4){ errors.push("Grade points must be between 0 and 4."); return; }
+      if (!ch || ch <= 0){ errors.push("Each graded course needs credit hours above 0."); return; }
+      semCh += ch; semQp += p * ch; used++;
+    });
+
+    var pC = num($("pCgpa").value), pH = num($("pCh").value);
+    if (pC !== null && (pC < 0 || pC > 4)) errors.push("Current CGPA must be between 0 and 4.");
+    var hasPrev = pC !== null && pH !== null && pH > 0 && pC >= 0 && pC <= 4;
+    if ((pC !== null) !== (pH !== null && pH > 0)) errors.push("Enter both your current CGPA and credit hours completed (or leave both empty).");
+
+    var gpa = semCh > 0 ? semQp / semCh : null;
+    var totalCh = semCh + (hasPrev ? pH : 0);
+    var totalQp = semQp + (hasPrev ? pC * pH : 0);
+    var cgpa = totalCh > 0 ? totalQp / totalCh : null;
+
+    state = {gpa:gpa, cgpa:cgpa, totalCh:totalCh};
+    $("gpa").textContent = gpa === null ? "0.00" : fmt(gpa);
+    $("cgpa").textContent = cgpa === null ? "0.00" : fmt(cgpa);
+
+    var html = "<div><span>Courses counted</span><span>" + used + "</span></div>" +
+      "<div><span>Credit hours this semester</span><span>" + semCh + "</span></div>" +
+      "<div><span>Quality points this semester</span><span>" + fmt(semQp) + "</span></div>";
+    if (hasPrev) html += "<div><span>Total credit hours</span><span>" + totalCh + "</span></div>";
+    $("breakdown").innerHTML = html;
+
+    var msg = $("msg");
+    var unique = errors.filter(function(e, i){ return errors.indexOf(e) === i; });
+    if (unique.length){ msg.textContent = unique.join(" "); msg.classList.add("show"); } else { msg.classList.remove("show"); }
+    target();
+  }
+
+  // ---- Target GPA for next semester ----
+  function target(){
+    var out = $("needOut"), t = num($("tCgpa").value), nh = num($("tCh").value);
+    out.classList.remove("bad");
+    if (t === null || nh === null || nh <= 0){ out.textContent = "Enter your target CGPA and next semester's credit hours."; return; }
+    if (state.cgpa === null){ out.textContent = "Enter this semester's courses (and your previous record) first."; return; }
+    if (t > 4){ out.classList.add("bad"); out.textContent = "The maximum CGPA is 4.00."; return; }
+    var needed = (t * (state.totalCh + nh) - state.cgpa * state.totalCh) / nh;
+    if (needed <= 0){
+      out.textContent = "You will stay at or above " + fmt(t) + " CGPA with any GPA next semester.";
+    } else if (needed > 4){
+      var best = (state.cgpa * state.totalCh + 4 * nh) / (state.totalCh + nh);
+      out.classList.add("bad");
+      out.textContent = "Not possible in one semester: even a perfect 4.00 GPA would take your CGPA to " + fmt(best) +
+        ". Keep going — it can be reached over more semesters.";
+    } else {
+      out.textContent = "You need a GPA of at least " + fmt(Math.ceil(needed * 100 - 1e-9) / 100) + " in " + nh + " credit hours next semester to reach " + fmt(t) + " CGPA.";
+    }
+  }
+  ["pCgpa","pCh"].forEach(function(id){ $(id).addEventListener("input", calc); });
+  ["tCgpa","tCh"].forEach(function(id){ $(id).addEventListener("input", target); });
+
+  // ---- WhatsApp share ----
+  $("share").addEventListener("click", function(){
+    var text = "My semester GPA is " + $("gpa").textContent + " and my CGPA is " + $("cgpa").textContent +
+      ". Calculate yours free: " + location.href.split("#")[0];
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+  });
+
+  calc();
+})();
+</script>
+</body>
+</html>
